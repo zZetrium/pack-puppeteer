@@ -1,19 +1,47 @@
-name: Build
-on: 
-    push: 
-        branches:
-            - main
+name: Build and Commit TypeScript
+
+on:
+  push:
+    branches:
+      - main
+
 jobs:
-    build:
-        runs-on: ubuntu-latest
-        steps: 
-            - name: Checkout project
-              uses: actions/checkout@v3
-            - name: Build and push
-             # uses: alexthemaster/action-build-typescript@v. # check the releases tab on the right for versions (looks like this: v1.0.0)
-              # use this if you want the sharpest of cutting edges (can and probably WILL break from time to time)
-              uses: alexthemaster/action-build-typescript@master
-              with:
-                pushToBranch: true # optional; can either be true or false | defaults to false
-                branch: 'build' # optional; the name of the branch the action should push the compiled code to | defaults to dist
-                githubToken: ${{ secrets.GITHUB_TOKEN }} # required if you use the pushToBranch option
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Needed to push to another branch
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Compile TypeScript
+        run: npx tsc
+
+      - name: Commit and push to build branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Switch to or create build branch
+          git checkout build || git checkout -b build
+
+          # Copy build artifacts (e.g., dist/) from main
+          rsync -av --delete dist/ ./
+
+          # Commit and push changes
+          git add .
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: update build output from ${GITHUB_SHA}"
+            git push origin build
+          fi
