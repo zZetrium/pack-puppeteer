@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <!---<link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">--->
+    <style>
+
+
+
+
+    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
+
+
+
+    <meta charset="UTF-8">
+
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style class="stylus">
+        img {
+            image-rendering: crisp-edges !important;
+        }
+    </style>
+</head>
+
+
+
+<body>
+    <div class="container-fluid mx-md-5  mx-3   my-md-5  my-4 ">
+        <h1>Kalkulačka vzorečků</h1>
+
+        <div class="row ">
+            <div class="col"> <!-- moves column slightly left -->
+                <select class="form-select" id="typeselection">
+                </select>
+            </div>
+            <div class="col ms-auto"> <button type="button" class="btn btn-dark" onclick="addValue()">Přidat</button>
+            </div>
+            <div class="row ">
+            </div>
+            <div class="col-6">
+            </div>
+
+        </div>
+        <div id="values">
+
+        </div>
+
+
+
+
+
+
+    </div>
+</body>
+<script>
+    class Unit {
+        constructor(name, conversion) {
+            this.name = name;
+            this.conversion = conversion;
+        }
+    }
+    class Quantity {
+        constructor(name, units) {
+            this.name = name;
+            this.units = units;
+        }
+    }
+    /**
+     * @param {Quantity[]} quantities Array of quantities.
+     * @return {Map<string,Quantity>}
+     */
+    function quantitiesToMap(quantities) {
+        let resultMap = new Map();
+        quantities.forEach(q => resultMap.set(q.name,q));
+        return resultMap;
+    }
+    class Value {
+        constructor(quantity, unit, value) {
+            // quantity
+            this.quantity = quantity;
+            this.unit = unit;
+            this.value = value;
+        }
+
+    }
+
+    let values = [];
+    let quantities = quantitiesToMap([
+        new Quantity("length", [
+            new Unit("mm", val => val * 1000),
+            new Unit("m", val => val),
+            new Unit("km", val => val / 1000),
+        ]),
+        new Quantity("time", [
+            new Unit("ms", val => val * 1000),
+            new Unit("s", val => val),
+            new Unit("min", val => val / 60),
+            new Unit("hod", val => val / 3600),
+        ]),
+        new Quantity("speed", [
+            new Unit("m/s", val => val),
+            new Unit("km/h", val => val / 3.6),
+            new Unit("km/h", val => val / 3.6),
+
+        ])
+    ]);
+    
+
+    let translation = new Map([
+        ["length", "Délka"],
+        ["time", "Čas"],
+        ["speed", "Rychlost"],
+        ["mass", "Hmotnost"],
+        ["electric_current", "Elektrický proud"],
+        ["temperature", "Teplota"],
+        ["substance_amount", "Látkové množství"],
+        ["luminous_intensity", "Svítivost"],
+    ]);
+
+
+    function addValue() {
+        let type = document.getElementById("typeselection").value;
+        values.push(new Value(quantityMap.get(type), "", 0));
+        updateValuesDisplay();
+        console.log(type);
+    }
+
+    /*
+    <div class="row my-md-3  my-2">
+            <div class="col-3">
+                <div class="card">
+                    <div class="card-body">
+                        Čas
+                    </div>
+                </div>
+            </div>
+            <div class="col-4  "> <input class="form-control" style="height: 100%;" type="number">
+            </div>
+            <div class="col-4  "> <select class="form-select" style="height: 100%;">
+                    <option value="length" selected="selected">Délka</option>
+                    <option value="time">Čas</option>
+                    <option value="mass">Hmotnost</option>
+                    <option value="electric_current">Elektrický proud</option>
+                    <option value="temperature">Teplota</option>
+                    <option value="substance_amount">Látkové množství</option>
+                    <option value="luminous_intensity">Svítivost</option>
+
+                </select>
+            </div>
+        </div>
+    */
+    function updateValuesDisplay() {
+        let valuesContent = "";
+        for (let i = 0; i < values.length; i++) {
+            valuesContent = valuesContent
+                + '<div class="row my-md-3  my-2"> <div class="col-3"> <div class="card"> <div class="card-body">'
+                + (translate(values[i].quantity.name))
+                + '</div></div></div><div class="col-4  "> <input class="form-control" style="height: 100%;" type="number" value=1></div><div class="col-4  "> <select class="form-select" style="height: 100%;">';
+            for (let j = 0; j < values[i].quantity.units.length; j++) {
+                let curUnit = values[i].quantity.units[j];
+                valuesContent = valuesContent
+                    + '<option value="' + curUnit.name + '">' + translate(curUnit.name) + '</option>';
+
+            }
+            valuesContent = valuesContent + '</select></div></div>'
+        }
+        document.getElementById("values").setHTMLUnsafe(valuesContent);
+    }
+
+    function translate(key) {
+        return translation.get(key) || key;
+    }
+
+
+
+
+    {
+        let quantityOptions = "";
+        quantities.forEach((val, key) => { quantityOptions = quantityOptions + '<option value="' + key.name + '">' + translate(key.name) + "</option>" });
+
+
+        document.getElementById("typeselection").setHTMLUnsafe(quantityOptions);
+    }
+
+
+
+</script>
+
+
+</html>
