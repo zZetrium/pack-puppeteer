@@ -1,4 +1,4 @@
-name: Build and Commit TypeScript
+name: make the fucking package json
 
 on:
   push:
