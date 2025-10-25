@@ -1,1 +1,44 @@
+name: Build and Commit TypeScript
 
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Needed to push to another branch
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Make lock
+        run: npm init -y
+
+      - name: Commit and push to build branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Switch to or create build branch
+          #  git checkout build || git checkout -b build
+
+          # Copy build artifacts (e.g., dist/) from main
+          rsync -av --delete dist/ ./
+
+          # Commit and push changes
+          git add .
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: update build output from ${GITHUB_SHA}"
+            git push origin build
+  
+          fi
