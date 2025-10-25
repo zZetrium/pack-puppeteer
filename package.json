@@ -1,9 +1,0 @@
-{
-  "name": "@zetrium/pack-puppeteer",
-  "version": "0.1.0",
-  "homepage": "https://github.com/zetrium/pack-puppeteer",
-  "license": "MIT",
-  "devDependencies": {
-    "typescript": ""
-  }
-}
