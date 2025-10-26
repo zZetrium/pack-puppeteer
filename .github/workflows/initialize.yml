@@ -39,6 +39,6 @@ jobs:
             echo "No changes to commit"
           else
             git commit -m "chore: update build output from ${GITHUB_SHA}"
-            git push origin build
+            git push origin main
   
           fi
