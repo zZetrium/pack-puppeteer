@@ -19,6 +19,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+      - name: Ensure lockfile is in sync
+        run: npm install --package-lock-only
+  
 
       - name: Install dependencies
         run: npm ci
