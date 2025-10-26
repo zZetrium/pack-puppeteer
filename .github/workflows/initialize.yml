@@ -31,7 +31,7 @@ jobs:
           #  git checkout build || git checkout -b build
 
           # Copy build artifacts (e.g., dist/) from main
-          rsync -av --delete dist/ ./
+          #   rsync -av --delete dist/ ./
 
           # Commit and push changes
           git add .
