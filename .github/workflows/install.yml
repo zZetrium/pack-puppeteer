@@ -21,7 +21,7 @@ jobs:
         with:
           node-version: 20
 
-      - name: Generate package.json and lock
+      - name: make tsconfig
         run: |
           npm init -y
           npm install typescript --save-dev
@@ -36,7 +36,7 @@ jobs:
           # Make sure we're on main, not detached
           git checkout main
 
-          git add package.json package-lock.json
+          git add tsconfig.json
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
