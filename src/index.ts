@@ -1,6 +1,6 @@
 import type { TextComponent } from "./types/text.js";
 console.log("hello");
 
-let packinfo : TextComponent = {type:"tex"};
+let packinfo : TextComponent = "hello";
 
 console.log((packinfo));
