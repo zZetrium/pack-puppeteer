@@ -1,7 +1,6 @@
-import type { Meta } from "./meta.js";
-import { getVersion } from "./meta.js";
+import type { TextComponent } from "./types/text.js";
 console.log("hello");
 
-let packinfo = {version:5};
+let packinfo : TextComponent = {type:"tex"};
 
-console.log(getVersion(packinfo));
+console.log((packinfo));
