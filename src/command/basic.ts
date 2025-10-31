@@ -1,6 +1,4 @@
-export type JsonComponent {
-    toJson(): string;
-}
+
 
 export class Command {
     components: CommandComponent[];
@@ -22,15 +20,26 @@ export class Command {
     }
 }
 
-export type CommandComponent = Argument | Macro;
+export type CommandComponent = Argument;
 
 
 
 export type Argument = {
+    /**
+     * Must have a single trailing space!
+     */
+    toString():string;
 }
 
 export class Macro {
+    name:string;
+    constructor(name:string) {
+        this.name = name;
+    }
 
+    toString():string {
+        return "${" + this.name +"}";
+    }
 }
 
 export class Hello implements Argument {

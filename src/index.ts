@@ -1,4 +1,4 @@
-import type { TextComponent } from "./types/text.js";
+import type { TextComponent } from "./nbt/text.js";
 console.log("hello");
 
 let packinfo : TextComponent = "why";
