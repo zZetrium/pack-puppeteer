@@ -1,4 +1,4 @@
-export interface Meta = {
+export interface Meta  {
     version:number;
 }
 
