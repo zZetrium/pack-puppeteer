@@ -16,7 +16,7 @@ export abstract class CommandNode<T> {
         this.value = value;
     }
 
-    isMacro(): boolean {
+    isMacro(): boolean{
         return this.value instanceof Macro;
     }
     abstract containsMacro(): boolean;
@@ -32,7 +32,15 @@ export abstract class CommandNode<T> {
         }
         return this;
     }
-    abstract emit(): string;
+    emit(): string {
+        if (isMacro(this.value)) {
+            return this.value.emit();
+        } else {
+            return this.emitNonMacro();
+        }
+
+    }
+    protected abstract emitNonMacro(): string;
 }
 
 export abstract class CommandBranch<T, C> extends CommandNode<T> {
@@ -45,6 +53,12 @@ export abstract class CommandBranch<T, C> extends CommandNode<T> {
 
     containsMacro(): boolean {
         return this.isMacro() || this.child.isMacro();
+    }
+}
+
+export abstract class CommandLeaf<T> extends CommandNode<T> {
+    containsMacro(): boolean {
+        return this.isMacro();
     }
 }
 
@@ -64,4 +78,8 @@ export class Macro {
     toString(): string {
         return this.emit();
     }
+}
+
+export function isMacro(value:any):value is Macro {
+    return value instanceof Macro;
 }

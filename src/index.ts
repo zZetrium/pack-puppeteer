@@ -1,6 +1,4 @@
-import type { TextComponent } from "./nbt/text.js";
-console.log("hello");
+import { Macro } from "./command/basic.js";
+import { TimeCommand } from "./command/minecraft.js";
 
-//let packinfo : TextComponent = "why";
-
-//console.log((packinfo));
+console.log(new TimeCommand(new Macro("hello")).emit())
