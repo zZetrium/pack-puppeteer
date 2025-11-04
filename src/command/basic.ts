@@ -1,47 +1,67 @@
 
 
-export class Command {
-    components: CommandComponent[];
-    constructor(components: CommandComponent[]) {
-        this.components = components;
+export abstract class CommandNode<T> {
+    value: T | Macro;
+
+
+    constructor(value: T | Macro) {
+        this.value = value;
     }
 
-    toString(): string {
-        let result = "";
-        let isMacroLine = false;
-        this.components.forEach(component => {
-            if (component instanceof Macro) {
-                isMacroLine = true;
-            }
-
-            result += component.toString();
-        });
-        return (isMacroLine ? "$" + result : result).trim();
+    get(): T | Macro {
+        return this.value;
     }
+
+    set(value: T | Macro) {
+        this.value = value;
+    }
+
+    isMacro(): boolean {
+        return this.value instanceof Macro;
+    }
+    abstract containsMacro(): boolean;
+
+    isValue(): boolean {
+        return !this.isMacro();
+    }
+
+    // fluent API
+    onValue(action: (value: T) => void): CommandNode<T> {
+        if (this.isValue()) {
+            action(this.value as T);
+        }
+        return this;
+    }
+    abstract emit(): string;
 }
 
-export type CommandComponent = Argument;
+export abstract class CommandBranch<T, C> extends CommandNode<T> {
 
+    child: CommandNode<C>;
+    constructor(value: T | Macro, child: CommandNode<C>) {
+        super(value);
+        this.child = child;
+    }
 
-
-export type Argument = {
-    /**
-     * Must have a single trailing space!
-     */
-    toString():string;
+    containsMacro(): boolean {
+        return this.isMacro() || this.child.isMacro();
+    }
 }
 
 export class Macro {
-    name:string;
-    constructor(name:string) {
-        this.name = name;
+    key: string;
+    constructor(key: string) {
+        this.key = key;
     }
 
-    toString():string {
-        return "${" + this.name +"}";
+
+    isMacro(): boolean {
+        return true;
     }
-}
-
-export class Hello implements Argument {
-
+    emit(): string {
+        return "${" + this.key + "}";
+    }
+    toString(): string {
+        return this.emit();
+    }
 }
